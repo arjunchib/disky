@@ -1,0 +1,2 @@
+#!/bin/sh
+node -r dotenv/config --enable-source-maps ./node_modules/disky/dist/disky.js
