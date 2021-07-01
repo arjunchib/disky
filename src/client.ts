@@ -7,16 +7,17 @@ interface ClientOptions {
 }
 
 export class Client {
+  options: ClientOptions;
   client: Discord.Client;
   listeners = new Map<string, (any) => void>();
 
   constructor(options: ClientOptions) {
+    this.options = options;
     this.client = new Discord.Client();
     this.client.on("ready", () => {
       this.#onReady();
     });
     this.client.on("message", async (msg) => {
-      if (!msg.content.startsWith(options.prefix)) return;
       await this.#onMessage(msg);
     });
     this.client.login(options.token);
@@ -31,7 +32,15 @@ export class Client {
   }
 
   async #onMessage(msg) {
-    const fns = [...this.listeners.values()];
-    return Promise.all(fns.map((fn) => fn({ msg })));
+    if (!msg.content.startsWith(this.options.prefix)) return;
+    const command = msg.content
+      .replace(this.options.prefix, "")
+      .trim()
+      .split(" ")[0];
+    if (this.listeners.has(command)) {
+      return await this.listeners.get(command)({ msg });
+    } else if (this.listeners.has("_default")) {
+      return await this.listeners.get("_default")({ msg });
+    }
   }
 }
