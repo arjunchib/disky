@@ -4,9 +4,12 @@
     "module": "ESNext",
     "target": "ESNext",
     "moduleResolution": "Node",
-    // "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
-  }
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "./lib",
+    "declaration": true,
+    "sourceMap": true
+  },
+  "include": ["src"]
 }

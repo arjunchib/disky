@@ -3,16 +3,19 @@
   "version": "0.0.0",
   "description": "A discord bot framework based on Discord.js",
   "type": "module",
+  "main": "lib/index.js",
   "bin": {
     "disky": "./bin/disky"
   },
   "scripts": {
-    "build": "esbuild ./src/index.js --bundle --outfile=./dist/disky.js --external:esbuild --external:consola --external:discord.js --external:chokidar --external:fs-extra --format=esm --platform=node"
+    "build": "tsc"
   },
   "author": "Arjun Chib",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^15.12.5"
+    "@types/fs-extra": "^9.0.11",
+    "@types/node": "^15.12.5",
+    "typescript": "^4.3.5"
   },
   "dependencies": {
     "chokidar": "^3.5.2",
