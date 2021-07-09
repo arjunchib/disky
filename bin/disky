@@ -1,2 +1,2 @@
 #!/bin/sh
-node -r dotenv/config --enable-source-maps --experimental-specifier-resolution=node ./node_modules/disky/lib/disky.js
+node -r dotenv/config --enable-source-maps --experimental-specifier-resolution=node ./node_modules/disky/lib/cli.js $@

@@ -28,7 +28,7 @@ export class Client {
   }
 
   #onReady() {
-    consola.info(`Logged in as ${this.client.user.tag}!`);
+    consola.info(`Logged in as ${this.client.user?.tag}!`);
   }
 
   async #onMessage(msg) {
