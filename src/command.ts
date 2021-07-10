@@ -1,7 +1,8 @@
-import type { Message } from "discord.js";
+import type { Client, Message } from "discord.js";
 
 interface CommandContext {
   msg: Message;
+  client: Client;
 }
 
 interface CommandInput {

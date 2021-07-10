@@ -38,9 +38,9 @@ export class Client {
       .trim()
       .split(" ")[0];
     if (this.listeners.has(command)) {
-      return await this.listeners.get(command)({ msg });
+      return await this.listeners.get(command)({ msg, client: this.client });
     } else if (this.listeners.has("_default")) {
-      return await this.listeners.get("_default")({ msg });
+      return await this.listeners.get("_default")({ msg, client: this.client });
     }
   }
 }
