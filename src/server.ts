@@ -67,6 +67,7 @@ export class Server {
           this.result = await this.#build();
         } else {
           await this.result.rebuild();
+          this.#updateListeners();
           consola.success("Built!");
         }
       });
