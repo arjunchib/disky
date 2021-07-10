@@ -51,7 +51,7 @@ export class Server {
       external: this.external,
       incremental: true,
     });
-    this.#updateListeners();
+    this.#updateCommands();
     consola.success("Built!");
     return build;
   }
@@ -67,29 +67,29 @@ export class Server {
           this.result = await this.#build();
         } else {
           await this.result.rebuild();
-          this.#updateListeners();
+          this.#updateCommands();
           consola.success("Built!");
         }
       });
   }
 
-  async #updateListeners() {
+  async #updateCommands() {
     for (const entryPoint of this.entryPoints) {
       const oldHash = this.entryPointCache.get(entryPoint);
       const newHash = hash(fs.readFileSync(entryPoint, "utf8"));
       if (oldHash !== newHash) {
-        const command = fileToCommand(entryPoint);
-        const listener = (
+        const name = fileToCommand(entryPoint);
+        const command = (
           await import(
             path.join(
               process.cwd(),
               ".disky",
               "commands",
-              `${command}.js?=${Date.now()}`
+              `${name}.js?=${Date.now()}`
             )
           )
-        ).default.fn;
-        this.client?.setListener(command, listener);
+        ).default;
+        this.client?.setCommand(name, command);
       }
     }
   }

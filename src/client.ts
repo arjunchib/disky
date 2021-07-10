@@ -1,5 +1,7 @@
 import consola from "consola";
 import Discord from "discord.js";
+import { help } from "./help";
+import type { Command, CommandContext } from "./command";
 
 interface ClientOptions {
   prefix: string;
@@ -9,7 +11,7 @@ interface ClientOptions {
 export class Client {
   options: ClientOptions;
   client: Discord.Client;
-  listeners = new Map<string, (any) => void>();
+  commands = new Map<string, Command>();
 
   constructor(options: ClientOptions) {
     this.options = options;
@@ -23,8 +25,8 @@ export class Client {
     this.client.login(options.token);
   }
 
-  setListener(command: string, fn: (any) => void) {
-    this.listeners.set(command, fn);
+  setCommand(name: string, command: Command) {
+    this.commands.set(name, command);
   }
 
   #onReady() {
@@ -33,14 +35,17 @@ export class Client {
 
   async #onMessage(msg) {
     if (!msg.content.startsWith(this.options.prefix)) return;
-    const command = msg.content
+    const name = msg.content
       .replace(this.options.prefix, "")
       .trim()
       .split(" ")[0];
-    if (this.listeners.has(command)) {
-      return await this.listeners.get(command)({ msg, client: this.client });
-    } else if (this.listeners.has("_default")) {
-      return await this.listeners.get("_default")({ msg, client: this.client });
+    const context: CommandContext = { msg, client: this.client };
+    if (this.commands.has(name)) {
+      return await this.commands.get(name).fn(context);
+    } else if (name === "help") {
+      return help(context, this.commands);
+    } else if (this.commands.has("_default")) {
+      return await this.commands.get("_default").fn(context);
     }
   }
 }
