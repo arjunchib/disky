@@ -39,7 +39,11 @@ export class Client {
       .replace(this.options.prefix, "")
       .trim()
       .split(" ")[0];
-    const context: CommandContext = { msg, client: this.client };
+    const context: CommandContext = {
+      msg,
+      client: this.client,
+      prefix: this.options.prefix,
+    };
     if (this.commands.has(name)) {
       return await this.commands.get(name).fn(context);
     } else if (name === "help") {

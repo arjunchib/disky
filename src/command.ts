@@ -3,6 +3,7 @@ import type { Client, Message } from "discord.js";
 export interface CommandContext {
   msg: Message;
   client: Client;
+  prefix: string;
 }
 
 interface CommandInput {

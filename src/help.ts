@@ -1,13 +1,13 @@
 import { CommandContext } from "./command";
 
-export function help({ msg }: CommandContext, commands) {
+export function help({ msg, prefix }: CommandContext, commands) {
   const lines = [];
   commands.forEach((command) => {
-    let line = `**${command.usage}** - ${command.description}`;
+    let line = `**${prefix}${command.usage}** - ${command.description}`;
     if (command.example) {
-      line += ` *(ex. ${command.example})*`;
+      line += ` *(ex. ${prefix}${command.example})*`;
     }
     lines.push(line);
   });
-  msg.reply(`\n${lines.join("\n")}`);
+  msg.channel.send(`\n${lines.join("\n")}`);
 }
