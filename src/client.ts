@@ -44,12 +44,16 @@ export class Client {
       client: this.client,
       prefix: this.options.prefix,
     };
-    if (this.commands.has(name)) {
-      return await this.commands.get(name).fn(context);
-    } else if (name === "help") {
-      return help(context, this.commands);
-    } else if (this.commands.has("_default")) {
-      return await this.commands.get("_default").fn(context);
+    try {
+      if (this.commands.has(name)) {
+        return await this.commands.get(name).fn(context);
+      } else if (name === "help") {
+        return help(context, this.commands);
+      } else if (this.commands.has("_default")) {
+        return await this.commands.get("_default").fn(context);
+      }
+    } catch (e) {
+      consola.error(e);
     }
   }
 }
