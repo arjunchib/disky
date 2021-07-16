@@ -5,6 +5,8 @@ import fs from "fs-extra";
 import consola from "consola";
 import { fileToCommand, hash } from "./util";
 import chokidar from "chokidar";
+import boxen from "boxen";
+import { rainbow } from "./util";
 
 interface ServerOptions {
   src?: string;
@@ -27,20 +29,32 @@ export class Server {
     this.commandsDir = path.join(this.src, "commands");
     this.#updateEntryPoints();
     this.#updateExternal();
-    consola.wrapAll();
   }
 
   async run() {
+    this.#printBanner();
+    consola.wrapAll();
     if (!this.client) {
       this.client = new Client(await this.#fetchClientOptions());
     }
-    this.result = await this.#build();
+    this.result = await this.#build(false);
     if (this.watch) {
       this.#watch();
     }
   }
 
-  async #build() {
+  #printBanner() {
+    process.stdout.write(
+      boxen(rainbow(`Disky @ 0.0.0`), {
+        padding: 1,
+        margin: { top: 0, bottom: 2, left: 0, right: 0 },
+        borderStyle: "round",
+        borderColor: "#418be5",
+      })
+    );
+  }
+
+  async #build(shouldLog = true) {
     await this.#updateEntryPoints();
     await this.#updateExternal();
     const build = await esbuild.build({
@@ -51,8 +65,7 @@ export class Server {
       external: this.external,
       incremental: true,
     });
-    this.#updateCommands();
-    consola.success("Built!");
+    this.#updateCommands(shouldLog);
     return build;
   }
 
@@ -68,16 +81,16 @@ export class Server {
         } else {
           await this.result.rebuild();
           this.#updateCommands();
-          consola.success("Built!");
         }
       });
   }
 
-  async #updateCommands() {
+  async #updateCommands(shouldLog = true) {
     for (const entryPoint of this.entryPoints) {
       const oldHash = this.entryPointCache.get(entryPoint);
       const newHash = hash(fs.readFileSync(entryPoint, "utf8"));
       if (oldHash !== newHash) {
+        this.entryPointCache.set(entryPoint, newHash);
         const name = fileToCommand(entryPoint);
         const command = (
           await import(
@@ -90,6 +103,7 @@ export class Server {
           )
         ).default;
         this.client?.setCommand(name, command);
+        if (shouldLog) consola.success(`Updated ${name}`);
       }
     }
   }

@@ -16,8 +16,8 @@ export class Client {
   constructor(options: ClientOptions) {
     this.options = options;
     this.client = new Discord.Client();
-    this.client.on("ready", () => {
-      this.#onReady();
+    this.client.on("ready", async () => {
+      await this.#onReady();
     });
     this.client.on("message", async (msg) => {
       await this.#onMessage(msg);
@@ -29,8 +29,12 @@ export class Client {
     this.commands.set(name, command);
   }
 
-  #onReady() {
-    consola.info(`Logged in as ${this.client.user?.tag}!`);
+  async #onReady() {
+    const invite = await this.client.generateInvite({
+      permissions: ["SEND_MESSAGES"],
+    });
+    consola.info(`Invite: ${invite}`);
+    consola.success(`Logged in as ${this.client.user?.tag}!`);
   }
 
   async #onMessage(msg) {
