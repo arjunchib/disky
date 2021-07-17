@@ -1,11 +1,12 @@
 import consola from "consola";
-import Discord from "discord.js";
+import Discord, { BitFieldResolvable } from "discord.js";
 import { help } from "./help";
 import type { Command, CommandContext } from "./command";
 
-interface ClientOptions {
+export interface ClientOptions {
   prefix: string;
   token: string;
+  intents: BitFieldResolvable<any>;
 }
 
 export class Client {
@@ -15,7 +16,9 @@ export class Client {
 
   constructor(options: ClientOptions) {
     this.options = options;
-    this.client = new Discord.Client();
+    this.client = new Discord.Client({
+      ws: { intents: ["GUILDS", "GUILD_MESSAGES", ...options.intents] },
+    });
     this.client.on("ready", async () => {
       await this.#onReady();
     });
