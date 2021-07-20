@@ -102,7 +102,7 @@ export class Server {
             )
           )
         ).default;
-        this.client?.setCommand(name, command);
+        this.client?.setCommand(name, new command());
         if (shouldLog) consola.success(`Updated ${name}`);
       }
     }

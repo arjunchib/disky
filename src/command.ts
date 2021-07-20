@@ -6,23 +6,13 @@ export interface CommandContext {
   prefix: string;
 }
 
-interface CommandInput {
+export interface CommandMeta {
   usage: string;
   example?: string;
   description: string;
-  command: (context: CommandContext) => void;
 }
 
-export class Command {
-  usage: string;
-  example: string;
-  description: string;
-  fn: (CommandContext) => void;
-
-  constructor(input: CommandInput) {
-    this.usage = input.usage;
-    this.example = input.example;
-    this.description = input.description;
-    this.fn = input.command;
-  }
+export interface Command {
+  meta?: CommandMeta;
+  run(ctx: CommandContext): void;
 }

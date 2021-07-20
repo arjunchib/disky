@@ -53,11 +53,11 @@ export class Client {
     };
     try {
       if (this.commands.has(name)) {
-        return await this.commands.get(name).fn(context);
+        return await this.commands.get(name).run(context);
       } else if (name === "help") {
         return help(context, this.commands);
       } else if (this.commands.has("_default")) {
-        return await this.commands.get("_default").fn(context);
+        return await this.commands.get("_default").run(context);
       }
     } catch (e) {
       consola.error(e);

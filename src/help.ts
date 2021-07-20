@@ -1,11 +1,14 @@
-import { CommandContext } from "./command";
+import { Command, CommandContext } from "./command";
 
-export function help({ msg, prefix }: CommandContext, commands) {
+export function help(
+  { msg, prefix }: CommandContext,
+  commands: Map<string, Command>
+) {
   const lines = [];
   commands.forEach((command) => {
-    let line = `**${prefix}${command.usage}** - ${command.description}`;
-    if (command.example) {
-      line += ` *(ex. ${prefix}${command.example})*`;
+    let line = `**${prefix}${command.meta?.usage}** - ${command.meta?.description}`;
+    if (command.meta?.example) {
+      line += ` *(ex. ${prefix}${command.meta.example})*`;
     }
     lines.push(line);
   });
