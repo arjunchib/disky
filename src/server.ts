@@ -2,15 +2,22 @@ import { Client } from "./client";
 import esbuild from "esbuild";
 import path from "path";
 import fs from "fs-extra";
-import consola from "consola";
 import { fileToCommand, hash } from "./util";
 import chokidar from "chokidar";
-import boxen from "boxen";
-import { rainbow } from "./util";
+import { Logger } from "./logger";
 
 interface ServerOptions {
   src?: string;
   watch?: boolean;
+  logging?: boolean;
+}
+
+async function sleep(ms) {
+  return new Promise<void>((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, ms);
+  });
 }
 
 export class Server {
@@ -21,42 +28,29 @@ export class Server {
   entryPoints: string[];
   external: string[];
   entryPointCache = new Map<string, string>();
-  result;
+  builder: esbuild.BuildIncremental | undefined;
+  logger: Logger | undefined;
 
   constructor(options: ServerOptions = {}) {
     if (options.src) this.src = options.src;
     if (options.watch) this.watch = options.watch;
+    if (options.logging) this.logger = new Logger();
     this.commandsDir = path.join(this.src, "commands");
     this.#updateEntryPoints();
     this.#updateExternal();
   }
 
   async run() {
-    this.#printBanner();
-    consola.wrapAll();
     if (!this.client) {
-      this.client = new Client(await this.#fetchClientOptions());
+      this.client = new Client(await this.#fetchClientOptions(), this.logger);
     }
-    this.result = await this.#build(false);
-    if (this.watch) {
-      this.#watch();
-    }
-  }
-
-  #printBanner() {
-    process.stdout.write(
-      boxen(rainbow(`Disky @ 0.0.0`), {
-        padding: 1,
-        margin: { top: 0, bottom: 2, left: 0, right: 0 },
-        borderStyle: "round",
-        borderColor: "#418be5",
-      })
-    );
+    this.builder = await this.#build(false);
+    if (this.watch) this.#watch();
   }
 
   async #build(shouldLog = true) {
-    await this.#updateEntryPoints();
-    await this.#updateExternal();
+    this.#updateEntryPoints();
+    this.#updateExternal();
     const build = await esbuild.build({
       entryPoints: this.entryPoints,
       format: "esm",
@@ -73,14 +67,18 @@ export class Server {
     chokidar
       .watch(this.src, { ignoreInitial: true })
       .on("all", async (event, path) => {
-        if (
-          ["add", "unlink"].includes(event) &&
-          path.startsWith("src/commands")
-        ) {
-          this.result = await this.#build();
-        } else {
-          await this.result.rebuild();
-          this.#updateCommands();
+        try {
+          if (
+            ["add", "unlink"].includes(event) &&
+            path.startsWith("src/commands")
+          ) {
+            this.builder = await this.#build();
+          } else {
+            await this.builder.rebuild();
+            this.#updateCommands();
+          }
+        } catch (e) {
+          this.logger.error(e);
         }
       });
   }
@@ -103,7 +101,7 @@ export class Server {
           )
         ).default;
         this.client?.setCommand(name, new command());
-        if (shouldLog) consola.success(`Updated ${name}`);
+        if (shouldLog) this.logger.updateCommand(name);
       }
     }
   }

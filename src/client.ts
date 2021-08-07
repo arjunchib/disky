@@ -1,7 +1,7 @@
-import consola from "consola";
 import Discord, { BitFieldResolvable } from "discord.js";
 import { help } from "./help";
 import type { Command, CommandContext } from "./command";
+import { Logger } from "./logger";
 
 export interface ClientOptions {
   prefix: string;
@@ -13,31 +13,32 @@ export class Client {
   options: ClientOptions;
   client: Discord.Client;
   commands = new Map<string, Command>();
+  logger: Logger | undefined;
 
-  constructor(options: ClientOptions) {
+  constructor(options: ClientOptions, logger: Logger | undefined) {
     this.options = options;
+    this.logger = logger;
     this.client = new Discord.Client({
       ws: { intents: ["GUILDS", "GUILD_MESSAGES", ...options.intents] },
     });
     this.client.on("ready", async () => {
-      await this.#onReady();
+      this.#onReady();
     });
     this.client.on("message", async (msg) => {
       await this.#onMessage(msg);
     });
     this.client.login(options.token);
+    this.client
+      .generateInvite({ permissions: ["SEND_MESSAGES"] })
+      .then((invite) => this.logger?.banner(invite));
   }
 
   setCommand(name: string, command: Command) {
     this.commands.set(name, command);
   }
 
-  async #onReady() {
-    const invite = await this.client.generateInvite({
-      permissions: ["SEND_MESSAGES"],
-    });
-    consola.info(`Invite: ${invite}`);
-    consola.success(`Logged in as ${this.client.user?.tag}!`);
+  #onReady() {
+    this.logger.ready();
   }
 
   async #onMessage(msg) {
@@ -52,6 +53,7 @@ export class Client {
       prefix: this.options.prefix,
     };
     try {
+      this.logger?.runCommand(name);
       if (this.commands.has(name)) {
         return await this.commands.get(name).run(context);
       } else if (name === "help") {
@@ -60,7 +62,7 @@ export class Client {
         return await this.commands.get("_default").run(context);
       }
     } catch (e) {
-      consola.error(e);
+      console.error(e);
     }
   }
 }

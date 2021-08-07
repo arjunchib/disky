@@ -8,7 +8,7 @@ yargs(hideBin(process.argv))
     aliases: ["$0"],
     describe: "Start the dev server",
     handler() {
-      const server = new Server({ watch: true });
+      const server = new Server({ watch: true, logging: true });
       server.run();
     },
   })
@@ -16,7 +16,7 @@ yargs(hideBin(process.argv))
     command: "serve",
     describe: "Start the server",
     handler() {
-      const server = new Server({ watch: true });
+      const server = new Server();
       server.run();
     },
   }).argv;
