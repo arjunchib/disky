@@ -12,14 +12,6 @@ interface ServerOptions {
   logging?: boolean;
 }
 
-async function sleep(ms) {
-  return new Promise<void>((resolve) => {
-    setTimeout(() => {
-      resolve();
-    }, ms);
-  });
-}
-
 export class Server {
   src = "./src";
   watch = false;
@@ -84,25 +76,24 @@ export class Server {
   }
 
   async #updateCommands(shouldLog = true) {
-    for (const entryPoint of this.entryPoints) {
-      const oldHash = this.entryPointCache.get(entryPoint);
-      const newHash = hash(fs.readFileSync(entryPoint, "utf8"));
+    const files = this.entryPoints.map((file) => {
+      const basename = path.basename(file, ".ts");
+      return path.join(process.cwd(), ".disky", "commands", `${basename}.js`);
+    });
+    const updatedCommands = [];
+    for (const file of files) {
+      const oldHash = this.entryPointCache.get(file);
+      const newHash = hash(fs.readFileSync(file, "utf8"));
       if (oldHash !== newHash) {
-        this.entryPointCache.set(entryPoint, newHash);
-        const name = fileToCommand(entryPoint);
-        const command = (
-          await import(
-            path.join(
-              process.cwd(),
-              ".disky",
-              "commands",
-              `${name}.js?=${Date.now()}`
-            )
-          )
-        ).default;
+        this.entryPointCache.set(file, newHash);
+        const name = fileToCommand(file);
+        const command = (await import(`${file}?=${Date.now()}`)).default;
         this.client?.setCommand(name, new command());
-        if (shouldLog) this.logger.updateCommand(name);
+        updatedCommands.push(name);
       }
+    }
+    if (shouldLog && updatedCommands.length) {
+      this.logger.updateCommand(updatedCommands.join(", "));
     }
   }
 

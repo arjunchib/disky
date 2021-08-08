@@ -26,19 +26,15 @@ export class Logger {
   banner(invite) {
     if (this.dirty) return;
     this.clearScreen();
+    const uptime = Math.ceil(process.uptime() * 1000);
     console.log(`
   ${rainbow(`Disky @ 0.0.0`)}
 
   > Invite bot with:
   > ${invite}
+  
+  ${chalk.cyan(`Ready in ${uptime}ms.`)}
 `);
-  }
-
-  ready() {
-    if (this.dirty) return;
-    const uptime = Math.ceil(process.uptime() * 1000);
-    console.log(`  ${chalk.cyan(`Ready in ${uptime}ms.`)}
-  `);
   }
 
   error(e) {

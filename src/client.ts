@@ -2,11 +2,12 @@ import Discord, { BitFieldResolvable } from "discord.js";
 import { help } from "./help";
 import type { Command, CommandContext } from "./command";
 import { Logger } from "./logger";
+import { IntentsResolvable } from "discord.js/src/util/Intents.js";
 
 export interface ClientOptions {
   prefix: string;
   token: string;
-  intents: BitFieldResolvable<any>;
+  intents: IntentsResolvable;
 }
 
 export class Client {
@@ -19,18 +20,15 @@ export class Client {
     this.options = options;
     this.logger = logger;
     this.client = new Discord.Client({
-      ws: { intents: ["GUILDS", "GUILD_MESSAGES", ...options.intents] },
+      intents: ["GUILDS", "GUILD_MESSAGES", ...options.intents],
     });
     this.client.on("ready", async () => {
       this.#onReady();
     });
-    this.client.on("message", async (msg) => {
+    this.client.on("messageCreate", async (msg) => {
       await this.#onMessage(msg);
     });
     this.client.login(options.token);
-    this.client
-      .generateInvite({ permissions: ["SEND_MESSAGES"] })
-      .then((invite) => this.logger?.banner(invite));
   }
 
   setCommand(name: string, command: Command) {
@@ -38,7 +36,11 @@ export class Client {
   }
 
   #onReady() {
-    this.logger.ready();
+    const invite = this.client.generateInvite({
+      permissions: ["SEND_MESSAGES"],
+      scopes: ["bot"],
+    });
+    this.logger?.banner(invite);
   }
 
   async #onMessage(msg) {
@@ -62,7 +64,7 @@ export class Client {
         return await this.commands.get("_default").run(context);
       }
     } catch (e) {
-      console.error(e);
+      this.logger?.error(e);
     }
   }
 }

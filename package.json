@@ -13,18 +13,24 @@
   "author": "Arjun Chib",
   "license": "ISC",
   "devDependencies": {
-    "@types/fs-extra": "^9.0.11",
-    "@types/node": "^15.12.5",
+    "@types/fs-extra": "^9.0.12",
+    "@types/node": "^16.4.13",
     "typescript": "^4.3.5"
   },
   "dependencies": {
-    "@types/yargs": "^17.0.1",
-    "chalk": "^4.1.1",
+    "@types/yargs": "^17.0.2",
+    "chalk": "^4.1.2",
     "chokidar": "^3.5.2",
-    "discord.js": "^12.5.3",
+    "discord.js": "^13.0.1",
     "dotenv": "^10.0.0",
-    "esbuild": "^0.12.14",
+    "esbuild": "^0.12.18",
     "fs-extra": "^10.0.0",
-    "yargs": "^17.0.1"
+    "yargs": "^17.1.0"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.3",
+    "erlpack": "github:discord/erlpack",
+    "utf-8-validate": "^5.0.5",
+    "zlib-sync": "^0.1.7"
   }
 }
