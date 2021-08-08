@@ -92,7 +92,9 @@ export class Server {
         updatedCommands.push(name);
       }
     }
-    if (shouldLog && updatedCommands.length) {
+    if (updatedCommands.length <= 0) return;
+    this.client.updateSlashCommands();
+    if (shouldLog) {
       this.logger.updateCommand(updatedCommands.join(", "));
     }
   }

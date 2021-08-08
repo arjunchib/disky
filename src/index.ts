@@ -1,2 +1,3 @@
 export { meta } from "./decorators";
-export { Command, CommandContext, CommandMeta } from "./command";
+export { Command, CommandContext } from "./command";
+export { ClientOptions } from "./client";

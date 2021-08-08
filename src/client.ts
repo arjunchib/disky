@@ -1,13 +1,11 @@
-import Discord, { BitFieldResolvable } from "discord.js";
-import { help } from "./help";
+import Discord, { Interaction, Intents } from "discord.js";
 import type { Command, CommandContext } from "./command";
 import { Logger } from "./logger";
-import { IntentsResolvable } from "discord.js/src/util/Intents.js";
 
 export interface ClientOptions {
-  prefix: string;
   token: string;
-  intents: IntentsResolvable;
+  intents?: Discord.BitFieldResolvable<Discord.IntentsString, number>;
+  guildId?: string;
 }
 
 export class Client {
@@ -19,14 +17,14 @@ export class Client {
   constructor(options: ClientOptions, logger: Logger | undefined) {
     this.options = options;
     this.logger = logger;
-    this.client = new Discord.Client({
-      intents: ["GUILDS", "GUILD_MESSAGES", ...options.intents],
-    });
+    const intents = new Intents(Intents.FLAGS.GUILDS);
+    if (options.intents) intents.add(options.intents);
+    this.client = new Discord.Client({ intents });
     this.client.on("ready", async () => {
-      this.#onReady();
+      await this.#onReady();
     });
-    this.client.on("messageCreate", async (msg) => {
-      await this.#onMessage(msg);
+    this.client.on("interactionCreate", async (interaction) => {
+      await this.#interactionCreate(interaction);
     });
     this.client.login(options.token);
   }
@@ -35,31 +33,37 @@ export class Client {
     this.commands.set(name, command);
   }
 
-  #onReady() {
-    const invite = this.client.generateInvite({
-      permissions: ["SEND_MESSAGES"],
-      scopes: ["bot"],
+  async updateSlashCommands() {
+    const commandData = [];
+    this.commands.forEach((command) => {
+      commandData.push(command.meta);
     });
-    this.logger?.banner(invite);
+    const commandHandler = this.options.guildId
+      ? this.client.guilds.cache.get(this.options.guildId)
+      : this.client.application;
+    await commandHandler?.commands.set(commandData);
+    if (this.options.guildId) {
+      await this.client.application?.commands.set([]);
+    }
   }
 
-  async #onMessage(msg) {
-    if (!msg.content.startsWith(this.options.prefix)) return;
-    const name = msg.content
-      .replace(this.options.prefix, "")
-      .trim()
-      .split(" ")[0];
+  async #onReady() {
+    const invite = this.client.generateInvite({ scopes: ["bot"] });
+    this.logger?.banner(invite);
+    this.updateSlashCommands();
+  }
+
+  async #interactionCreate(interaction: Interaction) {
+    if (!interaction.isCommand()) return;
     const context: CommandContext = {
-      msg,
+      interaction,
       client: this.client,
-      prefix: this.options.prefix,
     };
+    const name = interaction.commandName;
     try {
       this.logger?.runCommand(name);
       if (this.commands.has(name)) {
         return await this.commands.get(name).run(context);
-      } else if (name === "help") {
-        return help(context, this.commands);
       } else if (this.commands.has("_default")) {
         return await this.commands.get("_default").run(context);
       }

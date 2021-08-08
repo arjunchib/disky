@@ -1,18 +1,15 @@
-import type { Client, Message } from "discord.js";
+import type {
+  Client,
+  ApplicationCommandData,
+  CommandInteraction,
+} from "discord.js";
 
 export interface CommandContext {
-  msg: Message;
+  interaction: CommandInteraction;
   client: Client;
-  prefix: string;
-}
-
-export interface CommandMeta {
-  usage: string;
-  example?: string;
-  description: string;
 }
 
 export interface Command {
-  meta?: CommandMeta;
+  meta?: ApplicationCommandData;
   run(ctx: CommandContext): void;
 }
