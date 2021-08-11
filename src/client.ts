@@ -17,7 +17,7 @@ export class Client {
   constructor(options: ClientOptions, logger: Logger | undefined) {
     this.options = options;
     this.logger = logger;
-    const intents = new Intents(Intents.FLAGS.GUILDS);
+    const intents = new Intents();
     if (options.intents) intents.add(options.intents);
     this.client = new Discord.Client({ intents });
     this.client.on("ready", async () => {

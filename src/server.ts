@@ -50,6 +50,7 @@ export class Server {
       bundle: true,
       external: this.external,
       incremental: true,
+      platform: "node",
     });
     this.#updateCommands(shouldLog);
     return build;
@@ -115,7 +116,7 @@ export class Server {
   #updateExternal() {
     const proj = JSON.parse(fs.readFileSync("./package.json", "utf8"));
     const deps = Object.keys(proj.dependencies);
-    const devDeps = Object.keys(proj.dependencies);
+    const devDeps = Object.keys(proj.devDependencies);
     this.external = [...deps, ...devDeps];
   }
 }
