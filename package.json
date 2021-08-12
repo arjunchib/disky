@@ -5,7 +5,7 @@
   "type": "module",
   "main": "lib/index.js",
   "bin": {
-    "disky": "./bin/disky"
+    "disky": "lib/cli.js"
   },
   "scripts": {
     "build": "tsc"

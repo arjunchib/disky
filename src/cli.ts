@@ -2,13 +2,22 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { Server } from "./server";
 import process from "process";
+import fs from "fs";
+
+fs.readFileSync(".env", "utf8")
+  .split("\n")
+  .map((line) => {
+    const [name, variable] = line.split("=").map((str: string) => str.trim());
+    process.env[name] = variable;
+  });
 
 let server: Server;
 
 async function onExit(signal) {
   if (server) await server.onExit(signal);
+  process.removeListener("SIGINT", onExit);
+  process.removeListener("SIGTERM", onExit);
   process.kill(process.pid, signal);
-  process.exit();
 }
 
 process.on("SIGINT", onExit);
