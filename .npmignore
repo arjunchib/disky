@@ -3,3 +3,7 @@ lib
 src
 pnpm-lock.yaml
 tsconfig.json
+.vscode
+*.tgz
+package
+.DS_Store

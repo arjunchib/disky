@@ -1,14 +1,16 @@
 {
   "name": "disky",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A discord bot framework based on Discord.js",
   "type": "module",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "bin": {
     "disky": "lib/cli.js"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "prepublish": "tsc"
   },
   "author": "Arjun Chib",
   "license": "ISC",

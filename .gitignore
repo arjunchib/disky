@@ -1,3 +1,6 @@
 node_modules
 lib
-.vscode/settings.json
+.vscode
+*.tgz
+package
+.DS_Store
