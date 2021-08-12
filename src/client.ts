@@ -17,7 +17,7 @@ export class Client {
   constructor(options: ClientOptions, logger: Logger | undefined) {
     this.options = options;
     this.logger = logger;
-    const intents = new Intents();
+    const intents = new Intents(Intents.FLAGS.GUILDS);
     if (options.intents) intents.add(options.intents);
     this.client = new Discord.Client({ intents });
     this.client.on("ready", async () => {
@@ -36,7 +36,7 @@ export class Client {
   async updateSlashCommands() {
     const commandData = [];
     this.commands.forEach((command) => {
-      commandData.push(command.meta);
+      if (command.slash) commandData.push(command.slash);
     });
     const commandHandler = this.options.guildId
       ? this.client.guilds.cache.get(this.options.guildId)
@@ -53,12 +53,18 @@ export class Client {
     this.updateSlashCommands();
   }
 
+  async onExit(signal) {
+    if (this.options.guildId) {
+      await this.client.guilds.cache
+        .get(this.options.guildId)
+        ?.commands.set([]);
+    }
+    this.client.destroy();
+  }
+
   async #interactionCreate(interaction: Interaction) {
     if (!interaction.isCommand()) return;
-    const context: CommandContext = {
-      interaction,
-      client: this.client,
-    };
+    const context: CommandContext = { interaction };
     const name = interaction.commandName;
     try {
       this.logger?.runCommand(name);

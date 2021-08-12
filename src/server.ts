@@ -15,6 +15,7 @@ interface ServerOptions {
 export class Server {
   src = "./src";
   watch = false;
+  watcher: chokidar.FSWatcher;
   commandsDir: string;
   client: Client;
   entryPoints: string[];
@@ -40,6 +41,10 @@ export class Server {
     if (this.watch) this.#watch();
   }
 
+  async onExit(signal) {
+    await Promise.all([this.client.onExit(signal), this.watcher.close()]);
+  }
+
   async #build(shouldLog = true) {
     this.#updateEntryPoints();
     this.#updateExternal();
@@ -57,7 +62,7 @@ export class Server {
   }
 
   #watch() {
-    chokidar
+    this.watcher = chokidar
       .watch(this.src, { ignoreInitial: true })
       .on("all", async (event, path) => {
         try {
@@ -89,7 +94,7 @@ export class Server {
         this.entryPointCache.set(file, newHash);
         const name = fileToCommand(file);
         const command = (await import(`${file}?=${Date.now()}`)).default;
-        this.client?.setCommand(name, new command());
+        this.client?.setCommand(name, new command(this.client));
         updatedCommands.push(name);
       }
     }
