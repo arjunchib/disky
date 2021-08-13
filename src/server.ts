@@ -106,10 +106,14 @@ export class Server {
   }
 
   async #fetchClientOptions() {
+    await esbuild.build({
+      entryPoints: [path.join(process.cwd(), "./diskyrc.ts")],
+      outdir: ".disky",
+    });
     const optionsModule = await import(
-      path.join(process.cwd(), "./diskyrc.js")
+      path.join(process.cwd(), ".disky/diskyrc.js")
     );
-    return optionsModule.default;
+    return optionsModule.options;
   }
 
   #updateEntryPoints() {
