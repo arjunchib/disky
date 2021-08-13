@@ -1,7 +1,6 @@
 import Discord, { Interaction, Intents } from "discord.js";
-import type { Command, CommandContext } from "./command";
-import { Logger } from "./logger";
-import process from "process";
+import type { Command, CommandContext } from "./command.js";
+import { Logger } from "./logger.js";
 
 export interface ClientOptions {
   token: string;

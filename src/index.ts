@@ -1,2 +1,2 @@
-export { Command, CommandContext, slash } from "./command";
-export { ClientOptions } from "./client";
+export { Command, CommandContext, slash } from "./command.js";
+export { ClientOptions } from "./client.js";

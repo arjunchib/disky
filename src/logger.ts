@@ -1,6 +1,6 @@
 import readline from "readline";
 import chalk from "chalk";
-import { rainbow } from "./util";
+import { rainbow } from "./util/index.js";
 
 export class Logger {
   lastMsg: string | undefined = undefined;

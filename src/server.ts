@@ -1,10 +1,10 @@
-import { Client } from "./client";
+import { Client } from "./client.js";
 import esbuild from "esbuild";
 import path from "path";
 import fs from "fs-extra";
-import { fileToCommand, hash } from "./util";
+import { fileToCommand, hash } from "./util/index.js";
 import chokidar from "chokidar";
-import { Logger } from "./logger";
+import { Logger } from "./logger.js";
 
 interface ServerOptions {
   src?: string;

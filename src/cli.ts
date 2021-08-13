@@ -1,6 +1,6 @@
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { Server } from "./server";
+import { Server } from "./server.js";
 import process from "process";
 import fs from "fs";
 

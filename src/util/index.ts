@@ -1,3 +1,3 @@
-export { fileToCommand } from "./file-to-command";
-export { hash } from "./hash";
-export { rainbow } from "./rainbow";
+export { fileToCommand } from "./file-to-command.js";
+export { hash } from "./hash.js";
+export { rainbow } from "./rainbow.js";
