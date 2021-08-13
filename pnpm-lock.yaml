@@ -8,7 +8,6 @@ specifiers:
   chalk: ^4.1.2
   chokidar: ^3.5.2
   discord.js: ^13.0.1
-  dotenv: ^10.0.0
   erlpack: github:discord/erlpack
   esbuild: ^0.12.18
   fs-extra: ^10.0.0
@@ -18,16 +17,15 @@ specifiers:
   zlib-sync: ^0.1.7
 
 dependencies:
-  '@types/yargs': 17.0.2
   chalk: 4.1.2
   chokidar: 3.5.2
   discord.js: 13.0.1_72ef9f06cb99540da679cbf1bf7a3256
-  dotenv: 10.0.0
   esbuild: 0.12.18
   fs-extra: 10.0.0
   yargs: 17.1.0
 
 optionalDependencies:
+  '@types/yargs': 17.0.2
   bufferutil: 4.0.3
   erlpack: github.com/discord/erlpack/e27db8f82892bdb9b28a0547cc394d68b5d2242d
   utf-8-validate: 5.0.5
@@ -93,12 +91,14 @@ packages:
   /@types/yargs-parser/20.2.1:
     resolution: {integrity: sha512-7tFImggNeNBVMsn0vLrpn1H1uPrUBdnARPTpZoitY37ZrdJREzf7I16tMrlK3hen349gr1NYh8CmZQa7CTG6Aw==}
     dev: false
+    optional: true
 
   /@types/yargs/17.0.2:
     resolution: {integrity: sha512-JhZ+pNdKMfB0rXauaDlrIvm+U7V4m03PPOSVoPS66z8gf+G4Z/UW8UlrVIj2MRQOBzuoEvYtjS0bqYwnpZaS9Q==}
     dependencies:
       '@types/yargs-parser': 20.2.1
     dev: false
+    optional: true
 
   /ansi-regex/5.0.0:
     resolution: {integrity: sha512-bY6fj56OUQ0hU1KjFNDQuJFezqKdrAyFdIevADiqrWHwSlbmBNMHp5ak2f40Pm8JTFyM2mqxkG6ngkHO11f/lg==}
@@ -237,11 +237,6 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       is-obj: 2.0.0
-    dev: false
-
-  /dotenv/10.0.0:
-    resolution: {integrity: sha512-rlBi9d8jpv9Sf1klPjNfFAuWDjKLwTIJJ/VxtoTwIR6hnZxcEOQCZg2oIL3MWBYw5GpUDKOEnND7LXTbIpQ03Q==}
-    engines: {node: '>=10'}
     dev: false
 
   /emoji-regex/8.0.0:
