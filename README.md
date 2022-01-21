@@ -1,6 +1,8 @@
 # Disky
 
-> A Discord bot framework using [Discord.js](https://discord.js.org/#/)
+![npm](https://img.shields.io/npm/v/disky)
+
+A Discord bot framework using [Discord.js](https://discord.js.org/#/)
 
 - 🤖 Development mode
 - ♻️ Automatic command reloading
