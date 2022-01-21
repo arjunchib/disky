@@ -1,10 +1,10 @@
 # Disky
 
-> A Discord bot framework using discord.js
+> A Discord bot framework using [Discord.js](https://discord.js.org/#/)
 
-- 🪣 HMR Dev Server
-- 🛎 Typescript
-- 🧮 Easy Setup
+- 🤖 Development mode
+- ♻️ Automatic command reloading
+- 🖋 Typescript support
 
 ## Installation
 
@@ -14,7 +14,7 @@ npm install disky
 
 ## Get Started
 
-### Add env vars to `.env` file
+### Add discord config to `.env` file
 
 Variables set in `.env` file are automatically loaded and injected into `process.env`:
 
@@ -25,9 +25,9 @@ GUILD_ID=<DISCORD_GUILD_ID>
 
 ### Add `diskyrc.ts` config file
 
-- `token` Discord bot token
-- `guildId` Guild ID can be set to only load commands for a single guild (useful for dev/staging environemnts)
-- `intents` [Intents](https://discordjs.guide/popular-topics/intents.html#privileged-intents) to enable in the Discord client (the GUILD intent is enabled by automatically)
+- `token` - Discord bot token
+- `guildId` - Guild ID can be set to only load commands for a single guild (useful for dev/staging environemnts)
+- `intents` - [Intents](https://discordjs.guide/popular-topics/intents.html#privileged-intents) to enable in the Discord client (the GUILD intent is enabled by automatically)
 
 ```ts
 // diskyrc.ts
@@ -44,9 +44,9 @@ export const options: ClientOptions = {
 
 ### Add commands to `src/commands`
 
-Commands have a `run` function that gets called whenever a slash command is triggered. The [Interaction](https://discordjs.guide/interactions/replying-to-slash-commands.html#replying-to-slash-commands) can be used to respond to the command.
+Commands have a `run` function that gets called whenever a slash command is triggered. The interaction is passed via `run` and is used to repond to the action. Discord.js has a good guide on how to [reply to slash commands](https://discordjs.guide/interactions/replying-to-slash-commands.html#replying-to-slash-commands).
 
-Using the `@slash` decorator, will automatically register the command to be used with Discord.
+Use the `@slash` decorator to tell disky about the name, description, and arguments of the command.
 
 ```ts
 // src/commands/ping.ts
